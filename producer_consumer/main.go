@@ -80,6 +80,7 @@ func pizzeria(pizzaMaker *Producer) {
 	// run forever until we recieve quite message
 
 	// try to make pizzas
+	// this loop will continue executing until quit chan recieves something
 	for {
 		currentPizza := makePizza(i)
 		if currentPizza != nil {
@@ -116,8 +117,28 @@ func main() {
 
 	// run the producer in background as go routine
 	go pizzeria(pizzaJob)
+
 	// create and run consumer aka customer
-
+	for i := range pizzaJob.data {
+		if i.pizzaNumber <= numberOfPizzas {
+			if i.success {
+				color.Green(i.message)
+				color.Green("order number %d is out for deliver\n", i.pizzaNumber)
+			} else {
+				color.Red(i.message)
+				color.Red("the customer is really mad!")
+			}
+		} else {
+			color.Cyan("Done making pizzas")
+			err := pizzaJob.Close()
+			if err != nil {
+				color.Red("error closing channel: %v\n", err)
+			}
+		}
+	}
 	// print out ending message
+	color.Cyan("done for the day!")
+	color.Cyan("-----------------")
 
+	color.Cyan("we made %d pizzas but faild to make %d pizzas, with %d total orders", pizzasMade, pizzasFailed, total)
 }
