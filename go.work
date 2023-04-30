@@ -1,3 +1,6 @@
 go 1.20
 
-use ./udemy_section_3
+use (
+	./producer_consumer
+	./udemy_section_3
+)
